@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Video Playback</title>
+</head>
+<style type="text/css">
+	div {
+		width: 300px;
+		height: 300px;
+		overflow: hidden;
+		float: left;
+	}
+	video {
+		width: 300px;
+		height: 300px;
+		object-fit: none;
+		object-position: 0px 0px;
+	}
+</style>
+<body>
+	<button onclick="play()">PLAY</button>
+	<div>
+		<video id="video1" controls
+	       	src="birds1.mp4">
+		</video>
+	</div>
+	<div>
+		<video id="video2" controls
+	       	muted
+	       	src="birds2.mp4">
+		</video>
+	</div>
+	<div>
+		<video id="video3" controls
+	       	muted
+	       	src="birds3.mp4">
+		</video>			
+	</div>
+	<div>
+		<video id="video4" controls
+	       	muted
+	       	src="birds4.mp4">
+		</video>
+	</div>
+	<div>
+		<video id="video5" controls
+	       	muted
+	       	src="birds5.mp4">
+		</video>
+	</div>
+	<div>
+		<video id="video6" controls
+	       	muted
+	       	src="birds6.mp4">
+		</video>
+	</div>
+	<div>
+		<video id="video7" controls
+	       	muted
+	       	src="birds7.mp4">
+		</video>
+	</div>
+	<div>
+		<video id="video8" controls
+	       	muted
+	       	src="birds8.mp4">
+		</video>
+	</div>
+	<div>
+		<video id="video9" controls
+	       	muted
+	       	src="birds9.mp4">
+		</video>
+	</div>
+	<script type="text/javascript">
+		
+		function play() {
+			for (let x = 1; x < 10; x++) {
+				document.getElementById('video' + x).play();
+			}
+		}
+
+		/*
+			Good sources:
+			https://alcorn.com/av-synchronization-explained/
+			https://iicybersecurity.wordpress.com/2015/07/07/how-to-easily-hack-your-smart-tv-samsung-and-lg/
+			http://www.svlconnectsdk.com/
+			https://docs.openhab.org/addons/bindings/lgwebos/readme.html
+			https://github.com/hobbyquaker/lgtv2
+			http://webostv.developer.lge.com/discover/webos-tv-platform/web-engine/
+
+			1) Make sure all players start at same time (some kind of previous sync event)
+			2) Better drift computing (exponential, big corrections, small=no corrections)
+			   (maybe here we can use the algo used in drones for stability error correction)
+			3) WebAssembly for performance?!?!?!
+
+		*/
+
+		(function() {
+			let vc = [];
+			let drift = [];
+			for (let x = 1; x < 10; x++) {
+				vc.push(document.getElementById('video' + x));
+				drift.push(0);
+			}
+			setInterval(() => {
+				console.log('Sync...');
+				for (let x = 1; x < 9; x++) {
+					if (!vc[x].paused) {
+						drift[x] = 1 + (vc[0].currentTime - vc[x].currentTime) / 5;
+						vc[x].playbackRate = drift[x];
+					} else {
+						drift[x] = 0;
+					}
+				}
+				console.clear();
+				console.table(drift);
+			}, 1200);
+		})();
+	</script>
+</body>
+</html>
